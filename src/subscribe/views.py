@@ -14,44 +14,103 @@ class SubscribeView(View):
     def post(self, request, *args, **kwargs):
         try:
             data  = json.loads(request.body)
-            
             email = data['email']
             name  = data['name']
-           
-            if Subscribe.objects.filter(email = email).exists():
-                my_data = {
-                    'message':'Email is already existed',
-                    "result" : {
-                                    "email" : email
-                                }
-                }           
-                
-                return JsonResponse({'myData':my_data}, status=409)
             
             if re.findall('[@.]', email) != ['@', '.']:
-                return JsonResponse({'message':'NOT INCLUDE @ or . '}, status= 400)
+                my_data = {
+                    'message':'Not include "@" or "." at email',
+                    "error" : {
+                                    "email" : email,
+                                }
+                }           
+                return JsonResponse({'myData': my_data}, status=400)
            
-            subscribe = Subscribe.objects.create(
-                            email = email,
-                            name = name
-                        )  
+            if Subscribe.objects.filter(email = email).exists():
+                subscribe = Subscribe.objects.get(email = email)
+                if subscribe.is_subscribe == True:
+                    my_data = {
+                        'message':'Ths email is already subscriber',
+                        "error" : {
+                                        "email" : email
+                                    }
+                    }           
+                    return JsonResponse({'myData':my_data}, status=409)
+                else:
+                    subscribe.is_subscribe = True
+                    subscribe.save()
+            else:
+                subscribe = Subscribe.objects.create(
+                                email = email,
+                                name = name
+                            )  
             my_data = {
                     'message':'Success subscribe',
                     "result" : {
-                                    "id"    : subscribe.id,
-                                    "email" : subscribe.email,
-                                    "name"  : subscribe.name,
+                                    "id"           : subscribe.id,
+                                    "email"        : subscribe.email,
+                                    "name"         : subscribe.name,
+                                    "is_subscribe" : subscribe.is_subscribe,
+                                    "create_at"    : subscribe.created_at,
+                                    "update_at"    : subscribe.updated_at
                                 }
                 }           
             return JsonResponse({'myData': my_data}, status=201)
-        except KeyError:
+        except KeyError as error:
             my_data = {
                     'message': 'Key error',
+                    'error'  : {
+                                    "key" : str(error)
+                                }
                 }
             return JsonResponse({'myData': my_data}, status=400)
     
     def patch(self, request, *args, **kwargs):
-        pass
+        try:
+            data         = json.loads(request.body)
+            email        = data['email']
+           
+            if not Subscribe.objects.filter(email = email).exists():
+                my_data = {
+                    'message':'Email is not existed',
+                    "error" : {
+                                    "email" : email
+                                }
+                }           
+                return JsonResponse({'myData':my_data}, status=404)
+            
+            if re.findall('[@.]', email) != ['@', '.']:
+                my_data = {
+                    'message':'Not include "@" or "." at email',
+                    "error" : {
+                                    "email" : email,
+                                }
+                }           
+                return JsonResponse({'myData': my_data}, status=400)
+           
+            subscribe = Subscribe.objects.get(email = email)
+            subscribe.is_subscribe = False
+            subscribe.save()
+            my_data = {
+                    'message':'Success subscribe',
+                    "result" : {
+                                    "id"           : subscribe.id,
+                                    "email"        : subscribe.email,
+                                    "name"         : subscribe.name,
+                                    "is_subscribe" : subscribe.is_subscribe,
+                                    "create_at"    : subscribe.created_at,
+                                    "update_at"    : subscribe.updated_at
+                                }
+                }           
+            return JsonResponse({'myData': my_data}, status=201)
+        except KeyError as error:
+            my_data = {
+                    'message': 'Key error',
+                    'error'  : {
+                                    "key" : str(error)
+                                }
+                }
+            return JsonResponse({'myData': my_data}, status=400)
 
     def delete(self, request, *args, **kwargs):
         #데이터 전체 삭제
@@ -67,26 +126,22 @@ class SubscribeView(View):
                 subscribe_id = kwargs['subscribe_id']
                 subscribe = Subscribe.objects.get(id = subscribe_id)
                 my_data = {
-                    'message':'No content',
-                    "result" : {
+                    'message':f'Data(email{subscribe.email}) is deleted',
+                    "error" : {
                                     "id"    : subscribe.id,
                                     "email" : subscribe.email,
                                     "name"  : subscribe.name,
+                                    "create_at" : subscribe.created_at,
+                                    "update_at" : 000#datetime.now 
                                 }
                 }
                 subscribe.delete()          
-            return JsonResponse({'myData': my_data}, status=204)
-        
-        except KeyError:
-            my_data = {
-                    'message': 'Key error',
-                }
-            return JsonResponse({'myData': my_data}, status=400)
+            return JsonResponse({'myData': my_data}, status=200)
         
         except ObjectDoesNotExist:
             my_data = {
                     'message':'Not found',
-                    "result" : {
+                    "error" : {
                                     "id"    : subscribe_id,
                                 }
                 }
