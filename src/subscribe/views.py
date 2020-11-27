@@ -8,10 +8,10 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from .models                import Subscribe
 
 class SubscribeView(View):
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         return JsonResponse({'message':'pong'}, status= 200)
     
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         try:
             data  = json.loads(request.body)
             
@@ -45,12 +45,53 @@ class SubscribeView(View):
                 }           
             return JsonResponse({'myData': my_data}, status=201)
         except KeyError:
-            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+            my_data = {
+                    'message': 'Key error',
+                }
+            return JsonResponse({'myData': my_data}, status=400)
     
-    def patch(self, request):
+    def patch(self, request, *args, **kwargs):
         pass
 
-    def delete(self, request):
-        pass
+    def delete(self, request, *args, **kwargs):
+        #데이터 전체 삭제
+        try:
+            if not kwargs:
+                Subscribe.objects.all().delete()
+                my_data = {
+                        'message':'No contents',
+                    }           
+                return JsonResponse({'myData':my_data}, status=204)
+            #특정 데이터 삭제
+            else:
+                subscribe_id = kwargs['subscribe_id']
+                subscribe = Subscribe.objects.get(id = subscribe_id)
+                my_data = {
+                    'message':'No content',
+                    "result" : {
+                                    "id"    : subscribe.id,
+                                    "email" : subscribe.email,
+                                    "name"  : subscribe.name,
+                                }
+                }
+                subscribe.delete()          
+            return JsonResponse({'myData': my_data}, status=204)
+        
+        except KeyError:
+            my_data = {
+                    'message': 'Key error',
+                }
+            return JsonResponse({'myData': my_data}, status=400)
+        
+        except ObjectDoesNotExist:
+            my_data = {
+                    'message':'Not found',
+                    "result" : {
+                                    "id"    : subscribe_id,
+                                }
+                }
+            return JsonResponse({'myData':my_data}, status=404)
+
+
 
         
