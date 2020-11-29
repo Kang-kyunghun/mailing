@@ -137,7 +137,7 @@ class SubscribeView(View):
             my_data = {
                         'message':'No contents',
                     }           
-                return JsonResponse({'myData':my_data}, status=204)
+            return JsonResponse({'myData':my_data}, status=204)
         
         except ObjectDoesNotExist:
             my_data = {
@@ -150,4 +150,67 @@ class SubscribeView(View):
 
 
 
-        
+class SendEmailToSubscribe(View):
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({'message':'pong'}, status= 200)
+    
+    #구독자 생성
+    def post(self, request, *args, **kwargs):
+        try:
+            data  = json.loads(request.body)
+            email = data['email']
+            name  = data['name']
+            
+            #email 형식 validation
+            if re.findall('[@.]', email) != ['@', '.']:
+                my_data = {
+                    'message':'Not include "@" or "." at email',
+                    "error" : {
+                                    "email" : email,
+                                }
+                }           
+                return JsonResponse({'myData': my_data}, status=400)
+           
+            #DB에 email 등록 여부 확인
+            if Subscribe.objects.filter(email = email).exists():
+                subscribe = Subscribe.objects.get(email = email)
+                #이미 구독중
+                if subscribe.is_subscribe == True:
+                    my_data = {
+                        'message':'Ths email is already subscriber',
+                        "error" : {
+                                        "email" : email
+                                    }
+                    }           
+                    return JsonResponse({'myData':my_data}, status=409)
+                #DB에는 있지만 구독자가 아닌 email 구독자로 변경
+                else:
+                    subscribe.is_subscribe = True
+                    subscribe.save()
+            #DB에 없는 새로운 구독자 생성
+            else:
+                subscribe = Subscribe.objects.create(
+                                email = email,
+                                name = name
+                            )  
+            my_data = {
+                    'message':'Success subscribe',
+                    "result" : {
+                                    "id"           : subscribe.id,
+                                    "email"        : subscribe.email,
+                                    "name"         : subscribe.name,
+                                    "is_subscribe" : subscribe.is_subscribe,
+                                    "create_at"    : subscribe.created_at,
+                                    "update_at"    : subscribe.updated_at
+                                }
+                }           
+            return JsonResponse({'myData': my_data}, status=201)
+        except KeyError as error:
+            my_data = {
+                    'message': 'Key error',
+                    'error'  : {
+                                    "key" : str(error)
+                                }
+                }
+            return JsonResponse({'myData': my_data}, status=400)
+    
