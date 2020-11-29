@@ -1,12 +1,15 @@
 import json
 import re
-import requests
+
+import django_rq
 
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from .models                import Subscribe
+from utils  import send_email
+        
 
 class SubscribeView(View):
     def get(self, request, *args, **kwargs):
@@ -152,20 +155,7 @@ class SubscribeView(View):
             return JsonResponse({'myData':my_data}, status=404)
 
 class SendEmailToSubscribe(View):
-    def send_email(subscriber_list, subject, content):
-        URL     = 'http://python.recruit.herrencorp.com/api/v1/mail'
-        headers = {
-                "Authorization" : "herren-recruit-python",
-                "content_type"  : "application/x-www-form-urlencoded"
-        }
-        for subscribe in subscriber_list:
-            formbody =  {
-                    "mailto"  : subscribe.email,
-                    "subject" : subject,
-                    "content" : content
-            }
-        response = requests.post(URL, headers=headers, data=formbody)
-        
+    
     def get(self, request, *args, **kwargs):
         return JsonResponse({'message':'pong'}, status= 200)
     
@@ -176,8 +166,11 @@ class SendEmailToSubscribe(View):
             subject         = data['subject']
             content         = data['content']
             subscriber_list = Subscribe.objects.filter(is_subscribe=True)
-
-            send_email(subscriber_list, subject, content)
+          
+            q = django_rq.get_queue('default')
+            q.empty()
+            q.enqueue(send_email, subscriber_list, subject, content, result_ttl=30)
+            
             my_data = {
                     'message':'Accepted',
             }           

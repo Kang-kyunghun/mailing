@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_rq',
     'corsheaders',
     'subscribe',
+    
 ]
 
 MIDDLEWARE = [
@@ -158,3 +160,13 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+# Django-RQ Configuration
+RQ_QUEUES = {
+    "default": {"HOST": "localhost", 
+                "PORT": 6379,
+                "DB": 0, 
+                "DEFAULT_TIMEOUT": 360,},
+}
+
+DJANGO_SETTINGS_MODULE = 'settings rqworker high default low'
