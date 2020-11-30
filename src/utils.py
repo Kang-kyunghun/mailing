@@ -13,7 +13,7 @@ def send_email(subscriber_list, subject, content):
                     "subject" : subject,
                     "content" : content
             }
-        response = requests.post(URL, headers=headers, data=formbody)
+            response = requests.post(URL, headers=headers, data=formbody)
 
 def authorization(func):
     def wrapper(self, request, *args, **kwargs):
