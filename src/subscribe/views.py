@@ -12,15 +12,13 @@ from utils  import send_email, authorization
         
 
 class SubscribeView(View):       
-    #구독자 생성
     def post(self, request, *args, **kwargs):
         try:
             data  = json.loads(request.body)
             email = data['email']
             name  = data['name']
             
-            #email 형식 validation
-            if re.findall('[@.]', email) != ['@', '.']:
+            if re.findall('[@.]', email) != ['@', '.']: #email 형식 validation
                 my_data = {
                     'message':'Not include "@" or "." at email',
                     "error" : {
@@ -29,11 +27,10 @@ class SubscribeView(View):
                 }           
                 return JsonResponse({'myData': my_data}, status=400)
            
-            #DB에 email 등록 여부 확인
-            if Subscribe.objects.filter(email = email).exists():
+            if Subscribe.objects.filter(email = email).exists(): #DB에 email 등록 여부 확인
                 subscribe = Subscribe.objects.get(email = email)
-                #이미 구독중
-                if subscribe.is_subscribe == True:
+                
+                if subscribe.is_subscribe == True: #이미 구독중
                     my_data = {
                         'message':'Ths email is already subscriber',
                         "error" : {
@@ -41,12 +38,12 @@ class SubscribeView(View):
                                     }
                     }           
                     return JsonResponse({'myData':my_data}, status=409)
-                #DB에는 있지만 구독자가 아닌 email 구독자로 변경
-                else:
+                
+                else: #DB에는 있지만 구독자가 아닌 email 구독자로 변경
                     subscribe.is_subscribe = True
                     subscribe.save()
-            #DB에 없는 새로운 구독자 생성
-            else:
+            
+            else: #DB에 없는 새로운 구독자 생성
                 subscribe = Subscribe.objects.create(
                                 email = email,
                                 name = name
@@ -73,14 +70,12 @@ class SubscribeView(View):
                 }
             return JsonResponse({'myData': my_data}, status=400)
     
-    #구독 취소 but DB에 데이터는 남김
     def patch(self, request, *args, **kwargs):
         try:
             data         = json.loads(request.body)
             email        = data['email']
             
-            #email 형식 validation   
-            if re.findall('[@.]', email) != ['@', '.']:
+            if re.findall('[@.]', email) != ['@', '.']: #email 형식 validation
                 my_data = {
                     'message':'Not include "@" or "." at email',
                     "error" : {
@@ -89,8 +84,7 @@ class SubscribeView(View):
                 }           
                 return JsonResponse({'myData': my_data}, status=400)
             
-            #DB에 email 존재 하지 않음
-            if not Subscribe.objects.filter(email = email).exists():
+            if not Subscribe.objects.filter(email = email).exists(): #DB에 email 존재 하지 않음
                 my_data = {
                     'message':'Email is not existed',
                     "error" : {
@@ -125,15 +119,12 @@ class SubscribeView(View):
                 }
             return JsonResponse({'myData': my_data}, status=400)
 
-    #DB에서 데이터 삭제
     def delete(self, request, *args, **kwargs):
-        #데이터 전체 삭제
         try:
-            if not kwargs:
+            if not kwargs: #데이터 전체 삭제
                 Subscribe.objects.all().delete()
             
-            #특정 데이터 삭제
-            else:
+            else: #특정 데이터 삭제
                 subscribe_id = kwargs['subscribe_id']
                 subscribe = Subscribe.objects.get(id = subscribe_id).delete()
                           
