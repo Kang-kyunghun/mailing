@@ -155,11 +155,6 @@ class SubscribeView(View):
             return JsonResponse({'myData':my_data}, status=404)
 
 class SendEmailToSubscribe(View):
-    
-    def get(self, request, *args, **kwargs):
-        return JsonResponse({'message':'pong'}, status= 200)
-    
-    #구독자 생성
     def post(self, request, *args, **kwargs):
         try:
             data            = json.loads(request.body)
