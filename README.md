@@ -32,12 +32,12 @@
 |Key|type|설명|
 |:--:|:--:|-----|
 |email|string|구독자 email 주소|
-|name|string|구독자 주소|
+|name|string|구독자 이름|
 
 ### Description
 - 구독자 등록
 - 구독 취소자 재등록
-- 이미 구독 중인 email error 처리
+- 이미 구독 중인 email은 error 처리
 - 지원하지 않는 양식 : email 주소에는 반드시 '**@**'와 '**.**'이 포함 되어야 한다.  
 - status code
   - 201 : 정상적으 구독자 등록. 
@@ -94,6 +94,7 @@
 <br>
 <br>
 <br>
+
 # 리스트에 있는 구독자들에게 메일 보내기 API
 ## post
 `host:8000/subscribe`
