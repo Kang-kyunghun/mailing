@@ -8,13 +8,10 @@ from django.http            import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from .models                import Subscribe
-from utils  import send_email
+from utils  import send_email, authorization
         
 
-class SubscribeView(View):
-    def get(self, request, *args, **kwargs):
-        return JsonResponse({'message':'pong'}, status= 200)
-    
+class SubscribeView(View):       
     #구독자 생성
     def post(self, request, *args, **kwargs):
         try:
@@ -82,7 +79,7 @@ class SubscribeView(View):
             data         = json.loads(request.body)
             email        = data['email']
             
-            #email 형식 validation
+            #email 형식 validation   
             if re.findall('[@.]', email) != ['@', '.']:
                 my_data = {
                     'message':'Not include "@" or "." at email',
@@ -153,6 +150,38 @@ class SubscribeView(View):
                                 }
                 }
             return JsonResponse({'myData':my_data}, status=404)
+    
+    @authorization
+    def get(self, request, *args, **kwargs):
+        if not kwargs:
+            subscribes = Subscribe.objects.all()
+            my_data = {
+                'message':'Success subscribe',
+                'count'  : subscribes.count(),
+                "result" : [{
+                                "id"           : subscribe.id,
+                                "email"        : subscribe.email,
+                                "name"         : subscribe.name,
+                                "is_subscribe" : subscribe.is_subscribe,
+                                "create_at"    : subscribe.created_at,
+                                "update_at"    : subscribe.updated_at
+                            } for subscribe in subscribes]
+            }  
+        else:
+            subscribe_id = kwargs['subscribe_id']
+            subscribe = Subscribe.objects.get(id = subscribe_id)
+            my_data = {
+                'message':'Success subscribe',
+                "result" : {
+                                "id"           : subscribe.id,
+                                "email"        : subscribe.email,
+                                "name"         : subscribe.name,
+                                "is_subscribe" : subscribe.is_subscribe,
+                                "create_at"    : subscribe.created_at,
+                                "update_at"    : subscribe.updated_at
+                            }
+            }
+        return JsonResponse({'myData': my_data}, status=200)
 
 class SendEmailToSubscribe(View):
     def post(self, request, *args, **kwargs):
