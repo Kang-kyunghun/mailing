@@ -15,6 +15,7 @@
 - local에서 test 하기 위해서는 redis와 mysql이 있어야 한다.
 - local에서 비동기 서버 run 명령어: python manage.py rqworker
 <br>
+
 ## git branch
 - master: 초기 셋팅 상태
 - mailing_v1: email 도메인 구분 없이 메일 전송하는 version 1 (docker)
