@@ -75,37 +75,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mailing.wsgi.application'
 
 
-# Database
-# DATABASES = {
-#     'default' : {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'herren',
-#         'USER': 'root',
-#         'PASSWORD': '!kucie271150',
-#         'HOST': 'kyunghun-database.colrmog3tb1d.ap-northeast-2.rds.amazonaws.com',
-#         'PORT': '3306',
-#     }
-# }
-
+#Database
 
 
 DATABASES = {
-    'default' : {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'my-app-db',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '3306',
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 # Password validation
@@ -173,7 +151,7 @@ CORS_ALLOW_HEADERS = (
 
 
 RQ_QUEUES = {
-    "default": {"HOST": "redis", 
+    "default": {"HOST": "localhost", 
                 "PORT": 6379,
                 "DB": 0, 
                 "DEFAULT_TIMEOUT": 360,},
