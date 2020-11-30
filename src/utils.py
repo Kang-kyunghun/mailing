@@ -23,6 +23,7 @@ def send_email(subscriber_list, subject, content):
                         "Authorization" : "herren-recruit-python",
                         "content_type"  : "application/json"
                 }
+                formbody['version'] = '2'
                 response = requests.post(URL, headers=headers, data=json.dumps(formbody))
             
             #mailing version1
@@ -33,6 +34,7 @@ def send_email(subscriber_list, subject, content):
                         "Authorization" : "herren-recruit-python",
                         "content_type"  : "application/x-www-form-urlencoded"
                 }
+                formbody['version'] = '1'
                 response = requests.post(URL, headers=headers, data=formbody)
 
 def authorization(func):
