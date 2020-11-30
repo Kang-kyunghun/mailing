@@ -9,7 +9,7 @@ def send_email(subscriber_list, subject, content):
         for subscribe in subscriber_list:
             formbody =  {
                     "mailto"  : subscribe.email,
-                    "subject" : subject,
+                    "subject" : f'version2: {subject}',
                     "content" : content
             }
             
@@ -23,18 +23,21 @@ def send_email(subscriber_list, subject, content):
                         "Authorization" : "herren-recruit-python",
                         "content_type"  : "application/json"
                 }
-                formbody['version'] = '2'
                 response = requests.post(URL, headers=headers, data=json.dumps(formbody))
             
             #mailing version1
             else:
+                formbody =  {
+                    "mailto"  : subscribe.email,
+                    "subject" : f'version1: {subject}',
+                    "content" : content
+            }
         
                 URL     = 'http://python.recruit.herrencorp.com/api/v1/mail'
                 headers = {
                         "Authorization" : "herren-recruit-python",
                         "content_type"  : "application/x-www-form-urlencoded"
                 }
-                formbody['version'] = '1'
                 response = requests.post(URL, headers=headers, data=formbody)
 
 def authorization(func):
