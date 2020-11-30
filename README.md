@@ -12,7 +12,7 @@
 - clone을 받은 뒤 src 디렉토리로 이동
 - (sudo) docker-compose up -d --force-recreate 명령어로 docker-compose 실행
 -  docker-compose run django python manage.py migrate 명령어로 db migrate
-- local에서 test 하기 위해서는 redis와 mysql이 있어야 한다.
+- local에서 test 하기 위해서는 redis가 있어야 합니다.(DB는 sqllite사용)
 - local에서 비동기 서버 run 명령어: python manage.py rqworker
 <br>
 
