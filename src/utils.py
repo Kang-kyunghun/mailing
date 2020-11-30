@@ -9,7 +9,7 @@ def send_email(subscriber_list, subject, content):
         for subscribe in subscriber_list:
             formbody =  {
                     "mailto"  : subscribe.email,
-                    "subject" : f'version2: {subject}',
+                    "subject" : subject,
                     "content" : content
             }
             
@@ -27,11 +27,6 @@ def send_email(subscriber_list, subject, content):
             
             #mailing version1
             else:
-                formbody =  {
-                    "mailto"  : subscribe.email,
-                    "subject" : f'version1: {subject}',
-                    "content" : content
-            }
         
                 URL     = 'http://python.recruit.herrencorp.com/api/v1/mail'
                 headers = {
