@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    container_name: 'db'
+    hostname: 'db'
     image: mysql:5.7
     ports:
       - '3306:3306'
@@ -17,18 +17,24 @@ services:
   redis:
     container_name: 'redis'
     image: 'redis:3.2.0'
-    ports:
-      - '6378:6379'
+
 
   django:
     build: 
       context: . 
-      dockerfile: ./Dockerfile-dev
-    command: python manage.py runserver 0:8000
+      dockerfile: ./Dockerfile
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "mailing.wsgi:application"]
+    environment:
+      WAIT_HOSTS: db:3306
     ports:
       - "8000:8000"
     volumes:
       - .:/app
     depends_on:
       - db
+      - redis
+  rq:
+    build: .
+    command: python manage.py rqworker
+    links:
       - redis
