@@ -74,23 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mailing.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default' : {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'herren',
-#         'USER': 'root',
-#         'PASSWORD': '!kucie271150',
-#         'HOST': 'kyunghun-database.colrmog3tb1d.ap-northeast-2.rds.amazonaws.com',
-#         'PORT': '3306',
-#     }
-# }
-
-
-
 DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.mysql',
